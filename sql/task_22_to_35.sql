@@ -65,3 +65,25 @@ FROM patients p
 JOIN admissions a ON p.patient_id = a.patient_id
 WHERE YEAR(a.admission_date) = 2021
 GROUP BY p.patient_id;
+
+
+-- Task 28: Show the first name, last name, and the doctor who admitted each patient.
+SELECT 
+    p.first_name AS patient_first_name,
+    p.last_name AS patient_last_name,
+    d.first_name AS doctor_first_name,
+    d.last_name AS doctor_last_name
+FROM patients p
+JOIN admissions a ON p.patient_id = a.patient_id
+JOIN doctors d ON d.doctor_id = a.attending_doctor_id;
+
+
+
+-- Task 29: Show the number of admissions handled by each doctor.
+SELECT 
+    d.first_name AS doctor_first_name,
+    d.last_name AS doctor_last_name,
+    COUNT(a.patient_id) AS total_admissions
+FROM doctors d
+JOIN admissions a ON d.doctor_id = a.attending_doctor_id
+GROUP BY d.doctor_id;
