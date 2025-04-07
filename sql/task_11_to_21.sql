@@ -23,8 +23,8 @@ where
 
 -- Task 14:Based on the cities that our patients live in,
 -- show unique cities that are in province_id = 'NS'
-select
-    distinct city
+select distinct
+    city
 from
     patients
 where
@@ -40,13 +40,13 @@ select
 from
     patients
 where
-    height > 160 and weight > 70;
-
+    height > 160
+    and weight > 70;
 
 -- Task 16: Show unique birth years from patients
 -- and order them by ascending.
-SELECT
-    DISTINCT YEAR (birth_date) as birth_year
+SELECT DISTINCT
+    YEAR (birth_date) as birth_year
 FROM
     patients
 ORDER BY
@@ -76,7 +76,6 @@ WHERE
     AND first_name LIKE '%s'
     AND LENGTH (first_name) >= 6;
 
-
 -- Task 19: Show patient_id, first_name, 
 -- and last_name from patients whose diagnosis is 'Dementia'.
 -- (Diagnosis is stored in the admissions table.)
@@ -100,13 +99,19 @@ ORDER BY
     LENGTH (first_name),
     first_name ASC;
 
-
-
 -- Task 21: Show the total number of male patients and the total
 -- number of female patients in the patients table. Display the 
 -- two results in the same row.
-SELECT 
-    COUNT(CASE WHEN gender = 'M' THEN 1 END) AS male_count,
-    COUNT(CASE WHEN gender = 'F' THEN 1 END) AS female_count
-FROM patients
- 
+SELECT
+    COUNT(
+        CASE
+            WHEN gender = 'M' THEN 1
+        END
+    ) AS male_count,
+    COUNT(
+        CASE
+            WHEN gender = 'F' THEN 1
+        END
+    ) AS female_count
+FROM
+    patients
