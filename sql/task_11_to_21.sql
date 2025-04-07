@@ -4,100 +4,109 @@ select
 from
     admissions;
 
--- Task 12: Count male and female patients
-select
-    gender,
-    count(*) as total_pationts
-from
-    patients
-GROUP BY
-    gender;
-
--- Task 13: Count of patients in each city
-select
-    city,
-    count(*) as total_city_patients
-from
-    patients
-GROUP BY
-    city;
-
--- Task 14: Patients with weight greater than 100
+-- Task 12: Show all the columns from admissions where 
+-- the patient was admitted and discharged on the same day.
 select
     *
 from
-    patients
+    admissions
 where
-    weight > 100;
+    admission_date = discharge_date;
 
--- Task 15: Patients with height between 160 and 180
+-- Task 13: Show the total number of admissions for patient_id 579
 select
-    first_name,
-    last_name,
-    height
+    count(*) as total_admissions_579
 from
-    patients
+    admissions
 where
-    height between 160 and 180;
+    patient_id = 579;
 
--- Task 16: Show the number of patients for each birth year.
-SELECT
-    YEAR (birth_date) AS birth_year,
-    COUNT(*) AS total_patients
-FROM
-    patients
-GROUP BY
-    YEAR (birth_date)
-ORDER BY
-    birth_year;
-
--- Task 17: Show the first name, last name, and BMI of all patients (BMI = weight in kg / (height in meters)^2)
+-- Task 14:Based on the cities that our patients live in,
+-- show unique cities that are in province_id = 'NS'
 select
-    first_name,
-    last_name,
-    weight / ((height / 100) * (height / 100)) as BMI
-from
-    patients;
-
--- Task 18: Show the first name, last name, and BMI of patients who are obese.(Assume obese = BMI ≥ 30)
-SELECT
-    first_name,
-    last_name,
-    weight / ((height / 100) * (height / 100)) as BMI
+    distinct city
 from
     patients
 where
-    weight / ((height / 100) * (height / 100)) >= 30;
+    province_id = 'NS';
 
--- Task 19: Show the first name, last name, and birth year of patients who were born before 1990.
-SELECT
-    first_name,
-    last_name,
-    year (birth_date) as birth_year
-from
-    patients
-where
-    year (birth_date) < 1990;
-
--- Task 20: Show the first name, last name, and birth date of the youngest patient.
-SELECT
+-- Task 15: Write a query to find the first_name,
+-- last_name, and birth_date of patients who have 
+-- height more than 160 and weight more than 70
+select
     first_name,
     last_name,
     birth_date
+from
+    patients
+where
+    height > 160 and weight > 70;
+
+
+-- Task 16: Show unique birth years from patients
+-- and order them by ascending.
+SELECT
+    DISTINCT YEAR (birth_date) as birth_year
 FROM
     patients
 ORDER BY
-    birth_date DESC
-LIMIT
-    1;
+    birth_year ASC;
 
--- Task 21: Show the first name, last name, and admission date of patients admitted in the year 2021.
+-- Task 17: Show unique first names from the patients
+-- table which only occur once in the list.
+-- (Hint: Use HAVING because WHERE doesn't work with aggregate functions)
+select
+    first_name
+from
+    patients
+group by
+    first_name
+having
+    count(*) = 1;
+
+-- Task 18: Show patient_id and first_name from patients where their 
+-- first_name starts and ends with 's' and is at least 6 characters long.
 SELECT
-    first_name,
-    last_name,
-    admission_date
+    patient_id,
+    first_name
 FROM
     patients
-    JOIN admissions ON patients.patient_id = admissions.patient_id
 WHERE
-    YEAR (admission_date) = 2021;
+    first_name LIKE 's%'
+    AND first_name LIKE '%s'
+    AND LENGTH (first_name) >= 6;
+
+
+-- Task 19: Show patient_id, first_name, 
+-- and last_name from patients whose diagnosis is 'Dementia'.
+-- (Diagnosis is stored in the admissions table.)
+SELECT
+    p.patient_id,
+    p.first_name,
+    p.last_name
+FROM
+    patients p
+    JOIN admissions a ON p.patient_id = a.patient_id
+WHERE
+    a.diagnosis = 'Dementia';
+
+-- Task 20: Display every patient's first_name. Order 
+-- the list by the length of each name and then alphabetically.
+SELECT
+    first_name
+FROM
+    patients
+ORDER BY
+    LENGTH (first_name),
+    first_name ASC;
+
+
+
+-- Task 21: Show the total number of male patients and the total
+-- number of female patients in the patients table. Display the 
+-- two results in the same row.
+SELECT 
+    COUNT(CASE WHEN gender = 'M' THEN 1 END) AS male_count,
+    COUNT(CASE WHEN gender = 'F' THEN 1 END) AS female_count
+FROM patients
+ 
