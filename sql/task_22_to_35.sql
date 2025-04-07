@@ -121,7 +121,7 @@ HAVING
 -- Task 32: Show the doctor name and the number of different cities their patients are from.
 select
     d.first_name,
-    d.lastname,
+    d.last_name,
     count(distinct p.city) as unique_patients
 from
     doctors d
@@ -129,3 +129,54 @@ from
     join patients p on p.patient_id = a.patient_id
 group by
     d.doctor_id;
+
+-- Task 33: Show the patient full name and the number of doctors who have admitted them.
+select
+    concat (p.first_name, ' ', p.last_name) as full_name,
+    count(distinct a.attending_doctor_id) as total_doctors
+FROM
+    patients p
+    join admissions a on p.patient_id = a.patient_id
+    join doctors d on doctor_id = a.attending_doctor_id
+group by
+    p.patient_id;
+
+-- Task 34: 
+-- Show patient_id, first_name, last_name, and attending doctor's specialty.
+-- Show only the patients who have a diagnosis as 'Epilepsy' 
+-- and the doctor's first name is 'Lisa'.
+select
+    p.patient_id,
+    p.first_name,
+    p.last_name,
+    d.specialty
+from
+    patients p
+    join admissions a on p.patient_id = a.patient_id
+    join doctors d on d.doctor_id = a.attending_doctor_id
+where
+    a.diagnosis = 'Epilepsy'
+    and d.first_name = 'Lisa';
+
+
+
+-- Task 35: 
+-- Show the patient_id and temp_password for patients who have been admitted at least once.
+-- The password is: patient_id + length of last_name + birth year.
+
+SELECT
+    p.patient_id,
+    CONCAT (
+        p.patient_id,
+        LENGTH (p.last_name),
+        YEAR (p.birth_date)
+    ) AS temp_password
+FROM
+    patients p
+WHERE
+    p.patient_id IN (
+        SELECT DISTINCT
+            patient_id
+        FROM
+            admissions
+    );
