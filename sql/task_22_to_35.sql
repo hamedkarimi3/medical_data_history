@@ -158,12 +158,9 @@ where
     a.diagnosis = 'Epilepsy'
     and d.first_name = 'Lisa';
 
-
-
 -- Task 35: 
 -- Show the patient_id and temp_password for patients who have been admitted at least once.
 -- The password is: patient_id + length of last_name + birth year.
-
 SELECT
     p.patient_id,
     CONCAT (

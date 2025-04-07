@@ -1,4 +1,4 @@
--- Task 1: Show first name, last name, and gender of male patients
+-- Task 1: Show first name, last name, and gender of patients whose gender is 'M'
 SELECT
    first_name,
    last_name,
@@ -81,14 +81,11 @@ where
    );
 
 -- order by height desc limit 1;
--- Task 10: 5 lightest patients by weight
+-- Task 10: Show all columns for patients who have
+-- one of the following patient_ids: 1, 45, 534, 879, 1000
 select
-   first_name,
-   last_name,
-   weight
+   *
 from
    patients
-order by
-   weight asc
-limit
-   5;
+where
+   patient_id in (1, 45, 534, 879, 1000);
