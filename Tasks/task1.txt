@@ -1,0 +1,25 @@
+Task1 : Pull docker image with sql enviroment
+
+# Use the official MySQL image
+FROM mysql:8.0
+
+# Set environment variables
+ENV MYSQL_ROOT_PASSWORD=root
+ENV MYSQL_DATABASE=project_medical_data_history
+ENV MYSQL_USER=dm_team4
+ENV MYSQL_PASSWORD=DM!$!Team!47@4!23&
+
+# Expose the default MySQL port
+EXPOSE 3306
+
+
+
+2. Build the Docker Image
+docker build -t medical-sql-env .
+
+
+
+ 3. Run the Docker Container
+
+docker run --name medical-sql-db -p 3306:3306 -d medical-sql-env
+

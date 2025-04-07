@@ -30,10 +30,12 @@ docker run -d --name med-sql -p 3307:3306 \
 ## 🗃️ Folder Structure
 medical_data_history/
 ├── Dockerfile
-├── sql/
-│   ├── task_01_10.sql
-│   └── ...
+├── Tasks/
+│   ├──Task2_sql_queries/query_01_to_35.sql....
+│   └──Task1.txt
+│
 ├── reports/
 │   └── challenges_faced.md
+│   
 ├── .gitignore
 └── README.md
