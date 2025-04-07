@@ -1,145 +1,170 @@
--- Task 22: Show the number of admissions per patient
+-- Task 22: Show the total number of male patients and the total number of female patients 
+-- in the patients table. Display the two results in the same row.
+select
+    count(
+        case
+            when gender = 'M' then 1
+        end
+    ) as male_count,
+    count(
+        case
+            when gender = 'F' then 1
+        end
+    ) as female_count
+from
+    patients;
+
+-- Task 23:Show the patient_id, diagnosis from admissions. 
+-- Find patients admitted multiple times for the same diagnosis.
+select
+    a.patient_id,
+    a.diagnosis
+FROM
+    admissions a
+GROUP BY
+    a.patient_id,
+    a.diagnosis
+HAVING
+    COUNT(*) > 1;
+
+-- Task 24: Show the city and the total number of patients in the city.
+-- Order from most to least patients and then by city name ascending.
+SELECT
+    city,
+    COUNT(*) AS total_patients
+FROM
+    patients
+GROUP BY
+    city
+ORDER BY
+    total_patients DESC,
+    city ASC;
+
+-- Task 25: Show first_name, last_name, and role of every 
+-- person that is either a patient or a doctor.
+-- Roles are either "Patient" or "Doctor".
+SELECT
+    first_name,
+    last_name,
+    'Patient' AS role
+FROM
+    patients
+UNION
+-- Combine the results of both queries and remove duplicates
+SELECT
+    first_name,
+    last_name,
+    'Doctor' AS role
+FROM
+    doctors;
+
+-- Task 26: Show all allergies ordered by popularity. Remove NULL values from the query.
+select
+    allergies,
+    count(*) as total_allergies
+from
+    patients
+where
+    allergies is not null
+group by
+    allergies
+order by
+    total_allergies desc;
+
+-- Task 27: Show all patient's first_name, last_name,
+-- and birth_date who were born in the 1970s decade. 
+-- Sort the list starting from the earliest birth_date.
+SELECT
+    first_name,
+    last_name,
+    birth_date
+FROM
+    patients
+WHERE
+    YEAR(birth_date) BETWEEN 1970
+    AND 1979
+ORDER BY
+    birth_date ASC;
+
+-- Task 28: 
+-- We want to display each patient's full name in a single column.
+-- Last name in all uppercase
+-- First name in all lowercase
+-- Format: LASTNAME,firstname
+-- Order by first name in descending order.
+-- Note: The first name should be in lowercase and the last name in uppercase.
+SELECT
+    CONCAT(
+        UPPER(last_name),
+        ',',
+        LOWER(first_name)
+    ) AS full_name
+FROM
+    patients
+ORDER BY
+    first_name DESC;
+
+-- Task 29: Show the province_id(s) and the sum of height, 
+-- where the total sum of that province's patients' height
+-- is greater than or equal to 7,000.
+SELECT
+    province_id,
+    SUM(height) AS total_height
+FROM
+    patients
+GROUP BY
+    province_id
+HAVING
+    SUM(height) >= 7000;
+
+-- Task 30: Show the difference between the largest weight and smallest 
+-- weight for patients with the last name 'Maroni'
+SELECT
+    MAX(weight) - MIN(weight) AS weight_difference
+FROM
+    patients
+WHERE
+    last_name = 'Maroni';
+
+-- Task 31: Show all of the days of the month (1–31) and how many admission_dates
+-- occurred on that day. Sort by the day with most admissions to least.
+SELECT
+    DAY(admission_date) AS day_of_month,
+    COUNT(*) AS total_admissions
+FROM
+    admissions
+GROUP BY
+    DAY(admission_date)
+ORDER BY
+    total_admissions DESC;
+
+-- Task 32: Show all of the patients grouped into weight groups.
+-- Each group spans 10 units (e.g., 100–109 = group 100, 110–119 = group 110)
+-- Show total number of patients in each group
+SELECT
+    FLOOR(weight / 10) * 10 AS weight_group,
+    COUNT(*) AS total_patients
+FROM
+    patients
+GROUP BY
+    weight_group
+ORDER BY
+    weight_group DESC;
+
+-- Task 33:Show patient_id, weight, height, and isObese 
+-- from the patients table.isObese is a boolean (0 or 1)
+-- Obese if: weight (kg) / (height in meters)^2 ≥ 30
+-- Weight is in kg, height is in cm → convert height to meters
 SELECT
     patient_id,
-    count(*) as total_admissions
+    weight,
+    height,
+    CASE
+        WHEN weight / ((height / 100) * (height / 100)) >= 30 THEN 1
+        ELSE 0
+    END AS isObese
 FROM
-    admissions
-GROUP BY
-    patient_id;
-
--- Task 23:Show the first name, last name, and admission date of patients who were admitted more than once.
-SELECT
-    p.first_name,
-    p.last_name,
-    a.admission_date
-FROM
-    patients p
-    JOIN admissions a ON p.patient_id = a.patient_id
-WHERE
-    a.patient_id IN (
-        SELECT
-            patient_id
-        FROM
-            admissions
-        GROUP BY
-            patient_id
-        HAVING
-            COUNT(*) > 1
-    );
-
--- Task 24: Show the first name, last name, and number of admissions for each patient.
-SELECT
-    p.first_name,
-    p.last_name,
-    COUNT(a.patient_id) AS total_admissions
-FROM
-    patients p
-    JOIN admissions a ON p.patient_id = a.patient_id
-GROUP BY
-    p.patient_id;
-
--- Task 25: Show the first name, last name, and last admission date for each patient.
-SELECT
-    p.first_name,
-    p.last_name,
-    MAX(a.admission_date) AS last_admission_date
-FROM
-    patients p
-    JOIN admissions a ON p.patient_id = a.patient_id
-GROUP BY
-    p.patient_id;
-
--- Task 26: Show the number of patients admitted in each year
-select
-    year (admission_date) as admission_year,
-    count(*) as total_patients
-from
-    admissions
-group by
-    year (admission_date)
-order by
-    admission_year;
-
--- Task 27: Show the first name, last name, and admission count for patients who were admitted in 2021
-SELECT
-    p.first_name,
-    p.last_name,
-    COUNT(a.patient_id) AS total_admissions
-FROM
-    patients p
-    JOIN admissions a ON p.patient_id = a.patient_id
-WHERE
-    YEAR (a.admission_date) = 2021
-GROUP BY
-    p.patient_id;
-
--- Task 28: Show the first name, last name, and the doctor who admitted each patient.
-SELECT
-    p.first_name AS patient_first_name,
-    p.last_name AS patient_last_name,
-    d.first_name AS doctor_first_name,
-    d.last_name AS doctor_last_name
-FROM
-    patients p
-    JOIN admissions a ON p.patient_id = a.patient_id
-    JOIN doctors d ON d.doctor_id = a.attending_doctor_id;
-
--- Task 29: Show the number of admissions handled by each doctor.
-SELECT
-    d.first_name AS doctor_first_name,
-    d.last_name AS doctor_last_name,
-    COUNT(a.patient_id) AS total_admissions
-FROM
-    doctors d
-    JOIN admissions a ON d.doctor_id = a.attending_doctor_id
-GROUP BY
-    d.doctor_id;
-
--- Task 30: Unique patients admitted by each doctor
-SELECT
-    d.first_name AS doctor_first_name,
-    d.last_name AS doctor_last_name,
-    COUNT(DISTINCT a.patient_id) AS unique_patients -- distinct patients means no dublicates in the count and only count unique patients
-FROM
-    doctors d
-    JOIN admissions a ON d.doctor_id = a.attending_doctor_id
-GROUP BY
-    d.doctor_id;
-
--- Task 31: Show the first name and last name of patients who were admitted by more than one doctor.
-SELECT
-    p.first_name,
-    p.last_name
-FROM
-    patients p
-    JOIN admissions a ON p.patient_id = a.patient_id
-GROUP BY
-    p.patient_id
-HAVING
-    COUNT(DISTINCT a.attending_doctor_id) > 1;
-
--- Task 32: Show the doctor name and the number of different cities their patients are from.
-select
-    d.first_name,
-    d.last_name,
-    count(distinct p.city) as unique_patients
-from
-    doctors d
-    join admissions a on a.attending_doctor_id = d.doctor_id
-    join patients p on p.patient_id = a.patient_id
-group by
-    d.doctor_id;
-
--- Task 33: Show the patient full name and the number of doctors who have admitted them.
-select
-    concat (p.first_name, ' ', p.last_name) as full_name,
-    count(distinct a.attending_doctor_id) as total_doctors
-FROM
-    patients p
-    join admissions a on p.patient_id = a.patient_id
-    join doctors d on doctor_id = a.attending_doctor_id
-group by
-    p.patient_id;
+    patients;
 
 -- Task 34: 
 -- Show patient_id, first_name, last_name, and attending doctor's specialty.
@@ -172,8 +197,8 @@ FROM
     patients p
 WHERE
     p.patient_id IN (
-        SELECT DISTINCT
-            patient_id
+        SELECT
+            DISTINCT patient_id
         FROM
             admissions
     );
